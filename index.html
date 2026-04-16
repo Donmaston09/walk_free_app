@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="description" content="WalkFree — The world's most clinically advanced free cardiovascular disease prevention companion. AHA-backed, real-time, no hardware required." />
+  <meta name="theme-color" content="#0d1117" />
+  <meta name="author" content="Tony Onoja, University of Surrey" />
+  <title>WalkFree — Advanced Cardiovascular Health Companion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ===================== ONBOARDING ===================== -->
+<div id="onboarding-overlay" class="onboarding-overlay active" role="dialog" aria-modal="true" aria-label="Welcome setup">
+  <div class="onboarding-card">
+    <div class="onboarding-logo">
+      <div class="logo-pulse"></div>
+      <svg width="52" height="52" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <path d="M24 4C12.954 4 4 12.954 4 24s8.954 20 20 20 20-8.954 20-20S35.046 4 24 4z" fill="url(#grad1)"/>
+        <path d="M16 28c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="24" cy="18" r="3" fill="white"/>
+        <path d="M20 34l4-6 4 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+          <linearGradient id="grad1" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6366f1"/><stop offset="1" stop-color="#ec4899"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <h1 class="onboarding-title">WalkFree</h1>
+    <p class="onboarding-sub">Advanced Cardiovascular Health Companion</p>
+    <p class="onboarding-desc">The only free app that combines AI pose detection, rPPG heart rate, clinical sedentary algorithms, and AHA-backed coaching — no wearable needed.</p>
+
+    <div class="onboarding-steps">
+      <!-- Step 1 -->
+      <div class="ob-step active" id="ob-step-1">
+        <h3>👤 Tell us about yourself</h3>
+        <div class="form-group">
+          <label for="ob-name">First Name</label>
+          <input type="text" id="ob-name" placeholder="e.g. Alex" autocomplete="given-name" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ob-age">Age</label>
+            <input type="number" id="ob-age" placeholder="e.g. 58" min="18" max="100" />
+          </div>
+          <div class="form-group">
+            <label for="ob-weight">Weight (kg)</label>
+            <input type="number" id="ob-weight" placeholder="e.g. 78" min="30" max="250" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ob-gender">Biological Sex</label>
+            <select id="ob-gender">
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ob-height">Height (cm)</label>
+            <input type="number" id="ob-height" placeholder="e.g. 175" min="100" max="250" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="ob-condition">Primary Clinical Condition</label>
+          <select id="ob-condition">
+            <option value="prevention">General Prevention</option>
+            <option value="hypertension">Hypertension</option>
+            <option value="cad">Coronary Artery Disease (CAD)</option>
+            <option value="diabetes">Type 2 Diabetes</option>
+            <option value="af">Atrial Fibrillation</option>
+            <option value="hf">Heart Failure (stable)</option>
+            <option value="obesity">Obesity / Metabolic Syndrome</option>
+            <option value="post_mi">Post-MI Rehabilitation</option>
+          </select>
+        </div>
+        <button class="btn-primary" id="ob-next-1" onclick="onboardingNext(1)">Continue →</button>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="ob-step" id="ob-step-2">
+        <h3>🏃 Your Activity Baseline</h3>
+        <div class="form-group">
+          <label for="ob-steps">Current daily steps (estimate)</label>
+          <input type="number" id="ob-steps" placeholder="e.g. 3500" min="0" max="50000" />
+        </div>
+        <div class="form-group">
+          <label for="ob-sitting">Average daily sitting hours</label>
+          <select id="ob-sitting">
+            <option value="4">Less than 4 hours</option>
+            <option value="6" selected>4–6 hours</option>
+            <option value="8">6–8 hours</option>
+            <option value="10">8–10 hours</option>
+            <option value="12">More than 10 hours (High Risk)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Preferred Activity Type</label>
+          <div class="activity-type-grid" role="group" aria-label="Activity type">
+            <button class="act-type-btn selected" data-act="walking" onclick="selectActivityType(this,'walking')">
+              <span>🚶</span><span>Walking</span>
+            </button>
+            <button class="act-type-btn" data-act="running" onclick="selectActivityType(this,'running')">
+              <span>🏃</span><span>Running</span>
+            </button>
+            <button class="act-type-btn" data-act="cycling" onclick="selectActivityType(this,'cycling')">
+              <span>🚴</span><span>Cycling</span>
+            </button>
+            <button class="act-type-btn" data-act="sport" onclick="selectActivityType(this,'sport')">
+              <span>⚽</span><span>Sport</span>
+            </button>
+            <button class="act-type-btn" data-act="swimming" onclick="selectActivityType(this,'swimming')">
+              <span>🏊</span><span>Swimming</span>
+            </button>
+            <button class="act-type-btn" data-act="yoga" onclick="selectActivityType(this,'yoga')">
+              <span>🧘</span><span>Yoga</span>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>AHA Step Goal</label>
+          <div class="goal-selector" role="group" aria-label="Step goal">
+            <button class="goal-option" data-val="7000" onclick="selectGoal(this,7000)"><span class="goal-num">7,000</span><span class="goal-label">Conservative</span></button>
+            <button class="goal-option selected" data-val="8500" onclick="selectGoal(this,8500)"><span class="goal-num">8,500</span><span class="goal-label">Recommended</span></button>
+            <button class="goal-option" data-val="10000" onclick="selectGoal(this,10000)"><span class="goal-num">10,000</span><span class="goal-label">Optimal</span></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="onboardingBack(2)">← Back</button>
+          <button class="btn-primary" onclick="onboardingNext(2)">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="ob-step" id="ob-step-3">
+        <h3>🔔 Smart Permissions</h3>
+        <div class="permission-card">
+          <div class="perm-icon">🔔</div>
+          <div class="perm-content"><strong>Vascular Health Alerts</strong><p>50-min sedentary alerts to protect endothelial function</p></div>
+          <div class="toggle-switch"><input type="checkbox" id="toggle-notif" checked /><label for="toggle-notif" aria-label="Enable vascular alerts"></label></div>
+        </div>
+        <div class="permission-card">
+          <div class="perm-icon">📷</div>
+          <div class="perm-content"><strong>Camera (Active Sessions)</strong><p>Pose detection during exercise & rPPG heart rate</p></div>
+          <div class="toggle-switch"><input type="checkbox" id="toggle-cam" checked /><label for="toggle-cam" aria-label="Enable camera"></label></div>
+        </div>
+        <div class="permission-card">
+          <div class="perm-icon">📱</div>
+          <div class="perm-content"><strong>Motion Sensor (Background)</strong><p>Passive accelerometer step counting — battery efficient</p></div>
+          <div class="toggle-switch"><input type="checkbox" id="toggle-motion" checked /><label for="toggle-motion" aria-label="Enable motion sensor"></label></div>
+        </div>
+        <div class="safety-banner">
+          <span>⚕️</span>
+          <p>Always consult your physician before changing exercise intensity, especially with cardiovascular conditions. WalkFree is a wellness tool, not a medical device.</p>
+        </div>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="onboardingBack(3)">← Back</button>
+          <button class="btn-primary" onclick="completeOnboarding()">Start WalkFree ❤️</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ob-progress">
+      <div class="ob-dot active" id="dot-1"></div>
+      <div class="ob-dot" id="dot-2"></div>
+      <div class="ob-dot" id="dot-3"></div>
+    </div>
+    <!-- Creator footer in onboarding -->
+    <div class="ob-creator-note">
+      Inspired by <strong>Tony Onoja</strong>, School of Health Sciences, University of Surrey, UK
+    </div>
+  </div>
+</div>
+
+<!-- ===================== VASCULAR ALERT MODAL ===================== -->
+<div id="alert-modal" class="alert-modal" role="alertdialog" aria-live="assertive" aria-label="Vascular Health Alert">
+  <div class="alert-card">
+    <div class="alert-pulse-ring"></div>
+    <div class="alert-icon">💓</div>
+    <h2>Vascular Health Alert</h2>
+    <p>You've been sedentary for <strong id="alert-duration">52</strong> minutes. Endothelial dysfunction begins now — move!</p>
+    <div class="alert-science">
+      <span>🔬</span>
+      <em>Dunstan et al. (2012): Breaking sitting with 2 min of movement restores endothelial function and reduces post-meal glucose by 24%.</em>
+    </div>
+    <div class="alert-actions">
+      <button class="btn-alert-primary" onclick="startMicroIntervention('alert')">Start 2-Min Move ▶</button>
+      <button class="btn-alert-secondary" onclick="snoozeAlert()">Snooze 10 min</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== RPE MODAL ===================== -->
+<div id="rpe-modal" class="rpe-modal" role="dialog" aria-modal="true" aria-label="Rate of Perceived Exertion">
+  <div class="rpe-card">
+    <button class="modal-close-btn" onclick="document.getElementById('rpe-modal').classList.remove('active')" aria-label="Close">✕</button>
+    <h2>How are you feeling?</h2>
+    <p>Borg RPE Scale — essential safety check for cardiac patients</p>
+    <div class="rpe-scale" role="group" aria-label="Exertion scale">
+      <div class="rpe-item" data-rpe="6" onclick="setRPE(6,this)"><span class="rpe-num">6</span><span>Nothing at all</span><span class="rpe-bar" style="width:10%"></span></div>
+      <div class="rpe-item" data-rpe="9" onclick="setRPE(9,this)"><span class="rpe-num">9</span><span>Very light</span><span class="rpe-bar" style="width:25%"></span></div>
+      <div class="rpe-item" data-rpe="11" onclick="setRPE(11,this)"><span class="rpe-num">11</span><span>Light</span><span class="rpe-bar" style="width:38%"></span></div>
+      <div class="rpe-item" data-rpe="13" onclick="setRPE(13,this)"><span class="rpe-num">13</span><span>Somewhat hard</span><span class="rpe-bar" style="width:52%;background:var(--amber)"></span></div>
+      <div class="rpe-item" data-rpe="15" onclick="setRPE(15,this)"><span class="rpe-num">15</span><span>Hard</span><span class="rpe-bar" style="width:65%;background:var(--amber)"></span></div>
+      <div class="rpe-item" data-rpe="17" onclick="setRPE(17,this)"><span class="rpe-num">17</span><span>Very hard ⚠</span><span class="rpe-bar" style="width:78%;background:var(--red)"></span></div>
+      <div class="rpe-item" data-rpe="19" onclick="setRPE(19,this)"><span class="rpe-num">19</span><span>Extremely hard 🛑</span><span class="rpe-bar" style="width:90%;background:var(--red)"></span></div>
+      <div class="rpe-item" data-rpe="20" onclick="setRPE(20,this)"><span class="rpe-num">20</span><span>Maximum 🛑</span><span class="rpe-bar" style="width:100%;background:var(--red)"></span></div>
+    </div>
+    <p class="rpe-warning" id="rpe-warning" hidden>⚠️ This level exceeds safe cardiac exercise intensity. Reduce pace or stop immediately.</p>
+    <button class="btn-primary" onclick="confirmRPE()" id="rpe-confirm-btn">Confirm &amp; Continue</button>
+  </div>
+</div>
+
+<!-- ===================== COOLDOWN MODAL ===================== -->
+<div id="cooldown-modal" class="cooldown-modal" role="alertdialog" aria-label="Cool Down Warning">
+  <div class="cooldown-card">
+    <div class="cooldown-icon">🌡️</div>
+    <h2>Cool Down Immediately</h2>
+    <p>Estimated heart rate exceeded your safe ceiling of <strong id="hr-threshold">—</strong> BPM.</p>
+    <p style="font-size:12px;color:var(--text-muted)">Formula: <code>(220 − age) × 0.85</code> — AHA Cardiac Rehab Standard</p>
+    <div class="cooldown-steps">
+      <p>✅ Stop current activity now</p>
+      <p>✅ Slow walk or gentle march — 3 minutes</p>
+      <p>✅ Sit, 10 slow deep breaths (4s in, 6s out)</p>
+      <p>✅ Sip water, do NOT lie down suddenly</p>
+      <p>✅ If chest pain or dizziness: call emergency services</p>
+    </div>
+    <button class="btn-primary" onclick="closeCooldown()">I've slowed down ✓</button>
+    <button class="btn-secondary" style="margin-top:10px" onclick="endSession()">End Session</button>
+  </div>
+</div>
+
+<!-- ===================== ABOUT MODAL ===================== -->
+<div id="about-modal" class="about-modal" role="dialog" aria-modal="true" aria-label="About WalkFree">
+  <div class="about-card">
+    <button class="modal-close-btn" onclick="document.getElementById('about-modal').classList.remove('active')" aria-label="Close">✕</button>
+    <div class="about-logo-wrap">
+      <svg width="56" height="56" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <path d="M24 4C12.954 4 4 12.954 4 24s8.954 20 20 20 20-8.954 20-20S35.046 4 24 4z" fill="url(#gradAbout)"/>
+        <path d="M16 28c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="24" cy="18" r="3" fill="white"/>
+        <path d="M20 34l4-6 4 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+          <linearGradient id="gradAbout" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6366f1"/><stop offset="1" stop-color="#ec4899"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div>
+        <h2 class="about-app-name">WalkFree</h2>
+        <span class="about-version">v2.0 MVP — April 2025</span>
+      </div>
+    </div>
+
+    <p class="about-tagline">The world's most clinically grounded free cardiovascular prevention app — no hardware, no subscription, no compromise.</p>
+
+    <div class="about-edge-section">
+      <h4>🏆 WalkFree vs. The Competition</h4>
+      <div class="compare-table">
+        <div class="ct-header"><span>Feature</span><span>WalkFree</span><span>Fitbit</span><span>Apple Health</span></div>
+        <div class="ct-row"><span>Sedentary disease protocol (50/10)</span><span class="ct-yes">✓</span><span class="ct-no">✗</span><span class="ct-no">✗</span></div>
+        <div class="ct-row"><span>Condition-adjusted CV goals</span><span class="ct-yes">✓</span><span class="ct-no">✗</span><span class="ct-no">✗</span></div>
+        <div class="ct-row"><span>Camera-based step detection (AI)</span><span class="ct-yes">✓</span><span class="ct-no">✗</span><span class="ct-no">✗</span></div>
+        <div class="ct-row"><span>rPPG Heart Rate (no wearable)</span><span class="ct-yes">✓</span><span class="ct-no">✗</span><span class="ct-no">✗</span></div>
+        <div class="ct-row"><span>Arterial Age Estimator</span><span class="ct-yes">✓</span><span class="ct-no">✗</span><span class="ct-no">✗</span></div>
+        <div class="ct-row"><span>5-Zone HR Training</span><span class="ct-yes">✓</span><span class="ct-part">Partial</span><span class="ct-part">Watch only</span></div>
+        <div class="ct-row"><span>MET-accurate calorie engine</span><span class="ct-yes">✓</span><span class="ct-no">✗</span><span class="ct-no">✗</span></div>
+        <div class="ct-row"><span>Micro-Intervention engine (6 types)</span><span class="ct-yes">✓</span><span class="ct-no">✗</span><span class="ct-no">✗</span></div>
+        <div class="ct-row"><span>Borg RPE safety gate</span><span class="ct-yes">✓</span><span class="ct-no">✗</span><span class="ct-no">✗</span></div>
+        <div class="ct-row"><span>Local-first privacy (no cloud)</span><span class="ct-yes">✓</span><span class="ct-no">✗</span><span class="ct-no">✗</span></div>
+        <div class="ct-row"><span>Requires wearable hardware</span><span class="ct-yes" style="color:var(--emerald)">Never</span><span class="ct-no" style="color:var(--amber)">Recommended</span><span class="ct-no" style="color:var(--red)">Required</span></div>
+        <div class="ct-row"><span>Free &amp; open</span><span class="ct-yes">✓</span><span class="ct-no">Freemium</span><span class="ct-no">iOS only</span></div>
+      </div>
+    </div>
+
+    <div class="about-creator">
+      <h4>👤 Inspired By</h4>
+      <div class="creator-card">
+        <div class="creator-avatar">TO</div>
+        <div class="creator-info">
+          <strong>Tony Onoja</strong>
+          <span>School of Health Sciences</span>
+          <span>University of Surrey, United Kingdom</span>
+        </div>
+      </div>
+      <div class="creator-links">
+        <a href="mailto:a.onoja@surrey.ac.uk" class="creator-link" aria-label="University email">
+          <span>📧</span> a.onoja@surrey.ac.uk
+        </a>
+        <a href="mailto:donmaston09@gmail.com" class="creator-link" aria-label="Personal email">
+          <span>📧</span> donmaston09@gmail.com
+        </a>
+        <a href="https://paypal.me/Onoja412" target="_blank" rel="noopener" class="creator-link support-link" aria-label="Support via PayPal">
+          <span>💙</span> Support — paypal.me/Onoja412
+        </a>
+      </div>
+    </div>
+
+    <div class="about-references">
+      <h4>📚 Clinical Evidence Base</h4>
+      <p>• Paluch et al. (2021) JAMA Network Open — Step count &amp; all-cause mortality</p>
+      <p>• Dunstan et al. (2012) Diabetes Care — Breaking sedentary time &amp; glucose</p>
+      <p>• AHA Physical Activity Guidelines (2023)</p>
+      <p>• Morishima et al. (2017) — Calf raises &amp; popliteal artery blood flow</p>
+      <p>• Borg (1982) — Perceived Exertion Scale</p>
+    </div>
+
+    <p class="about-disclaimer">WalkFree is a wellness companion, not a certified medical device. Always consult your physician before changing exercise routines.</p>
+  </div>
+</div>
+
+<!-- ===================== MAIN APP ===================== -->
+<div id="app" class="app hidden">
+
+  <!-- TOP BAR -->
+  <header class="top-bar" role="banner">
+    <div class="top-bar-left">
+      <div class="app-logo-small" aria-label="WalkFree logo">
+        <svg width="28" height="28" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <path d="M24 4C12.954 4 4 12.954 4 24s8.954 20 20 20 20-8.954 20-20S35.046 4 24 4z" fill="url(#grad2)"/>
+          <path d="M16 28c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="24" cy="18" r="3" fill="white"/>
+          <path d="M20 34l4-6 4 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="grad2" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#6366f1"/><stop offset="1" stop-color="#ec4899"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="app-name-small">WalkFree</span>
+    </div>
+    <div class="top-bar-right">
+      <div class="sedentary-timer-badge" id="sedentary-badge" aria-label="Sedentary timer" role="timer">
+        <span class="timer-icon">🪑</span>
+        <span id="sedentary-display">00:00</span>
+      </div>
+      <button class="icon-btn" onclick="openAbout()" aria-label="About WalkFree" title="About &amp; Credits">
+        <div class="avatar about-avatar" id="about-btn-avatar">ℹ</div>
+      </button>
+      <button class="icon-btn" onclick="openProfile()" aria-label="Open profile">
+        <div class="avatar" id="avatar-initials">AO</div>
+      </button>
+    </div>
+  </header>
+
+  <!-- ACTIVITY MODE SELECTOR -->
+  <div class="activity-mode-bar" id="activity-mode-bar" role="region" aria-label="Activity mode">
+    <button class="am-btn active" data-act="walking" onclick="setActivityMode(this,'walking')" aria-pressed="true">🚶 Walking</button>
+    <button class="am-btn" data-act="running" onclick="setActivityMode(this,'running')" aria-pressed="false">🏃 Running</button>
+    <button class="am-btn" data-act="cycling" onclick="setActivityMode(this,'cycling')" aria-pressed="false">🚴 Cycling</button>
+    <button class="am-btn" data-act="sport" onclick="setActivityMode(this,'sport')" aria-pressed="false">⚽ Sport</button>
+    <button class="am-btn" data-act="swimming" onclick="setActivityMode(this,'swimming')" aria-pressed="false">🏊 Swimming</button>
+    <button class="am-btn" data-act="yoga" onclick="setActivityMode(this,'yoga')" aria-pressed="false">🧘 Yoga</button>
+  </div>
+
+  <!-- NAV TABS -->
+  <nav class="tab-nav" role="navigation" aria-label="Main navigation">
+    <button class="tab-btn active" id="tab-dashboard" onclick="switchTab('dashboard')" aria-selected="true" role="tab">
+      <span class="tab-icon">📊</span><span>Dashboard</span>
+    </button>
+    <button class="tab-btn" id="tab-session" onclick="switchTab('session')" aria-selected="false" role="tab">
+      <span class="tab-icon">📷</span><span>Active</span>
+    </button>
+    <button class="tab-btn" id="tab-interventions" onclick="switchTab('interventions')" aria-selected="false" role="tab">
+      <span class="tab-icon">⚡</span><span>MoveNow</span>
+    </button>
+    <button class="tab-btn" id="tab-history" onclick="switchTab('history')" aria-selected="false" role="tab">
+      <span class="tab-icon">📈</span><span>Progress</span>
+    </button>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" role="main">
+
+    <!-- ========= DASHBOARD ========= -->
+    <section id="tab-content-dashboard" class="tab-content active" aria-label="Dashboard">
+
+      <div class="greeting-block">
+        <div>
+          <p class="greeting-time" id="greeting-time">Good morning</p>
+          <h2 class="greeting-name" id="greeting-name">Alex 👋</h2>
+          <p class="activity-mode-label" id="activity-mode-label">🚶 Walking Mode</p>
+        </div>
+        <div class="heart-score-badge" aria-label="Heart health score">
+          <div class="hs-ring">
+            <svg width="60" height="60" viewBox="0 0 56 56" aria-hidden="true">
+              <circle cx="28" cy="28" r="22" stroke="#1e293b" stroke-width="5" fill="none"/>
+              <circle cx="28" cy="28" r="22" stroke="url(#hsGrad)" stroke-width="5" fill="none"
+                stroke-dasharray="138.23" stroke-dashoffset="55" stroke-linecap="round"
+                transform="rotate(-90 28 28)" id="hs-circle"/>
+              <defs>
+                <linearGradient id="hsGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop stop-color="#6366f1"/><stop offset="1" stop-color="#ec4899"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span class="hs-value" id="hs-value">—</span>
+          </div>
+          <div>
+            <span class="hs-label">Heart<br/>Score</span>
+            <div class="arterial-age-mini" id="arterial-age-mini" title="Estimated vascular age">Art. Age: <strong id="art-age-mini">—</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step Ring -->
+      <div class="step-card" role="region" aria-label="Daily step progress">
+        <div class="step-ring-container">
+          <svg class="step-ring" width="210" height="210" viewBox="0 0 210 210" aria-hidden="true">
+            <!-- Outer ring: steps -->
+            <circle cx="105" cy="105" r="90" stroke="#1e293b" stroke-width="13" fill="none"/>
+            <circle cx="105" cy="105" r="90" stroke="url(#stepGrad)" stroke-width="13" fill="none"
+              stroke-dasharray="565.49" stroke-dashoffset="565" stroke-linecap="round"
+              transform="rotate(-90 105 105)" id="step-progress-circle" class="step-circle-anim"/>
+            <!-- Inner ring: calorie burn zone -->
+            <circle cx="105" cy="105" r="72" stroke="#1e2332" stroke-width="7" fill="none"/>
+            <circle cx="105" cy="105" r="72" stroke="url(#calGrad)" stroke-width="7" fill="none"
+              stroke-dasharray="452.39" stroke-dashoffset="452" stroke-linecap="round"
+              transform="rotate(-90 105 105)" id="cal-progress-circle" class="step-circle-anim"/>
+            <defs>
+              <linearGradient id="stepGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop stop-color="#10b981"/><stop offset="1" stop-color="#6366f1"/>
+              </linearGradient>
+              <linearGradient id="calGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop stop-color="#f59e0b"/><stop offset="1" stop-color="#ec4899"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="step-ring-center">
+            <div class="step-count-display" id="step-count" aria-live="polite" aria-label="Steps today">0</div>
+            <div class="step-label" id="step-unit-label">steps today</div>
+            <div class="step-goal-label">Goal: <strong id="step-goal-display">8,500</strong></div>
+            <div class="met-badge" id="met-badge">MET: <strong id="met-value">3.5</strong></div>
+          </div>
+        </div>
+        <div class="step-metrics">
+          <div class="metric-pill"><span class="mp-icon">🎯</span><div><span class="mp-value" id="steps-remaining">8,500</span><span class="mp-label">remaining</span></div></div>
+          <div class="metric-pill"><span class="mp-icon">🔥</span><div><span class="mp-value" id="calories-est">0</span><span class="mp-label">kcal (MET)</span></div></div>
+          <div class="metric-pill"><span class="mp-icon">📍</span><div><span class="mp-value" id="distance-est">0.0</span><span class="mp-label">km est.</span></div></div>
+          <div class="metric-pill"><span class="mp-icon">⏱</span><div><span class="mp-value" id="active-minutes">0</span><span class="mp-label">active min</span></div></div>
+        </div>
+      </div>
+
+      <!-- HR Zones Panel -->
+      <div class="hr-zones-card" role="region" aria-label="Heart rate training zones">
+        <div class="hrz-header">
+          <h3>❤️ HR Training Zones</h3>
+          <span class="hrz-current-badge" id="hrz-current-badge">Zone 2 — Fat Burn</span>
+        </div>
+        <div class="hrz-bars" id="hrz-bars" aria-label="Heart rate zones">
+          <!-- Filled by JS -->
+        </div>
+        <div class="hrz-footer">
+          <span>Resting HR: <strong id="hrz-resting">—</strong> BPM</span>
+          <span>Max HR: <strong id="hrz-max">—</strong> BPM</span>
+          <button class="hrz-measure-btn" onclick="startHRCheck()">Measure Now</button>
+        </div>
+      </div>
+
+      <!-- AHA Banner -->
+      <div class="aha-banner" role="region" aria-label="AHA Guidelines">
+        <div class="aha-icon">❤️‍🩺</div>
+        <div class="aha-content">
+          <p class="aha-title">AHA Daily Target · <span id="aha-activity-label">Walking</span></p>
+          <div class="aha-range">
+            <div class="aha-bar-wrap" role="progressbar" aria-label="Goal progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="10000" id="aha-bar-wrap">
+              <div class="aha-bar-fill" id="aha-bar-fill"></div>
+              <div class="aha-marker" style="left:70%">7k</div>
+              <div class="aha-marker" style="left:100%">10k</div>
+            </div>
+            <div class="aha-current" id="aha-current">0 / 10,000 steps</div>
+          </div>
+          <p class="aha-note" id="aha-science-note">7,000–10,000 steps improves arterial elasticity &amp; endothelial function (AHA, 2023)</p>
+        </div>
+      </div>
+
+      <!-- Arterial Age Estimator -->
+      <div class="arterial-age-card" role="region" aria-label="Arterial age estimator">
+        <div class="aa-header">
+          <h3>🩸 Arterial Age Estimator</h3>
+          <span class="aa-badge" id="aa-status-badge">Calculating…</span>
+        </div>
+        <div class="aa-content">
+          <div class="aa-vs">
+            <div class="aa-stat">
+              <span class="aa-val" id="chronological-age">—</span>
+              <span class="aa-lbl">Your Age</span>
+            </div>
+            <div class="aa-arrow">→</div>
+            <div class="aa-stat">
+              <span class="aa-val" id="arterial-age" style="color:var(--indigo-light)">—</span>
+              <span class="aa-lbl">Arterial Age</span>
+            </div>
+            <div class="aa-stat">
+              <span class="aa-val" id="arterial-delta" style="font-size:18px">—</span>
+              <span class="aa-lbl">Difference</span>
+            </div>
+          </div>
+          <p class="aa-explanation" id="aa-explanation">Complete your first activity session to calibrate your arterial age estimate.</p>
+          <div class="aa-impact-note">
+            <span>💡</span>
+            <em>Every 2,000 extra daily steps = ~1 year younger arterial age (Paluch et al., JAMA 2021)</em>
+          </div>
+        </div>
+      </div>
+
+      <!-- 50/10 Sedentary Status -->
+      <div class="sedentary-card" role="region" aria-label="Sedentary status">
+        <div class="sc-header">
+          <div class="sc-icon">🪑</div>
+          <div><h3>50/10 Sitting Firewall</h3><p>Clinically proven to restore endothelial function</p></div>
+          <button class="sc-reset-btn" onclick="resetSedentaryTimer()" aria-label="I moved — reset timer">I Moved!</button>
+        </div>
+        <div class="sc-progress-wrap" role="progressbar" aria-label="Sitting time" aria-valuenow="0" aria-valuemin="0" aria-valuemax="50">
+          <div class="sc-progress-fill" id="sc-progress-fill"></div>
+        </div>
+        <div class="sc-stats">
+          <span>Sitting: <strong id="sc-sitting-time">0 min</strong></span>
+          <span id="sc-status-text" class="sc-status-ok">✓ Vascular health OK</span>
+          <span>Breaks today: <strong id="sc-cycles">0</strong></span>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions" role="region" aria-label="Quick actions">
+        <button class="qa-btn qa-session" onclick="switchTab('session')" id="start-session-btn">
+          <span class="qa-icon">📷</span><span>Start<br/>Active Session</span>
+        </button>
+        <button class="qa-btn qa-micro" onclick="startMicroIntervention('quick')">
+          <span class="qa-icon">⚡</span><span>2-Min<br/>MicroMove</span>
+        </button>
+        <button class="qa-btn qa-hr" onclick="startHRCheck()">
+          <span class="qa-icon">💓</span><span>Heart Rate<br/>Check</span>
+        </button>
+      </div>
+
+      <!-- HR Monitor -->
+      <div class="hr-card" role="region" aria-label="Heart rate monitor">
+        <div class="hr-header">
+          <h3>💓 Heart Rate via Camera</h3>
+          <span class="hr-method-badge">rPPG — No wearable needed</span>
+        </div>
+        <div id="hr-idle-state" class="hr-idle">
+          <p>Cover the rear camera lens with your fingertip. The app reads pulse from subtle colour changes in your skin.</p>
+          <button class="btn-primary" style="max-width:200px" onclick="startHRCheck()">Start Measurement</button>
+        </div>
+        <div id="hr-measuring-state" class="hr-measuring hidden">
+          <video id="hr-video" autoplay playsinline muted class="hr-video" aria-label="Camera for HR"></video>
+          <canvas id="hr-canvas" class="hr-canvas" aria-hidden="true"></canvas>
+          <div class="hr-live-display">
+            <div class="hr-bpm" id="hr-bpm-value" aria-live="polite">--</div>
+            <div class="hr-bpm-label">BPM</div>
+            <canvas id="waveform-canvas" width="280" height="60" style="border-radius:8px;background:var(--bg-elevated)"></canvas>
+            <div class="hr-zone-display" id="hr-zone-display">Zone —</div>
+            <div class="hr-status" id="hr-status-text">Detecting pulse…</div>
+            <button class="btn-secondary" style="max-width:140px;margin-top:4px" onclick="stopHRCheck()">Stop</button>
+          </div>
+        </div>
+        <div class="hr-threshold-info">Safe Max HR: <strong id="hr-threshold-display">—</strong> BPM &nbsp;|&nbsp; <code>(220 − age) × 0.85</code></div>
+      </div>
+
+    </section>
+
+    <!-- ========= ACTIVE SESSION ========= -->
+    <section id="tab-content-session" class="tab-content" aria-label="Active Session">
+      <div class="session-header">
+        <h2>Active Session</h2>
+        <p>MediaPipe pose detection · Real-time step counting · MET-accurate calorie tracking</p>
+      </div>
+
+      <!-- Activity type selector within session -->
+      <div class="session-activity-picker" role="group" aria-label="Choose exercise type">
+        <button class="sap-btn active" data-act="walking" onclick="setSessionActivity(this,'walking')">🚶 Walk</button>
+        <button class="sap-btn" data-act="running" onclick="setSessionActivity(this,'running')">🏃 Run</button>
+        <button class="sap-btn" data-act="cycling" onclick="setSessionActivity(this,'cycling')">🚴 Cycle</button>
+        <button class="sap-btn" data-act="sport" onclick="setSessionActivity(this,'sport')">⚽ Sport</button>
+        <button class="sap-btn" data-act="swimming" onclick="setSessionActivity(this,'swimming')">🏊 Swim</button>
+        <button class="sap-btn" data-act="yoga" onclick="setSessionActivity(this,'yoga')">🧘 Yoga</button>
+      </div>
+
+      <div class="camera-container" id="camera-container">
+        <video id="session-video" autoplay playsinline muted class="session-video" aria-label="Camera feed"></video>
+        <canvas id="session-canvas" class="session-canvas" aria-hidden="true"></canvas>
+        <div class="camera-overlay" id="camera-overlay">
+          <div class="camera-idle-content">
+            <div class="camera-icon-big" id="session-act-icon">🚶</div>
+            <h3 id="session-act-title">Walking Session</h3>
+            <p id="session-act-desc">Camera detects hip/legs via MediaPipe Pose. Stand 2–3m away for best accuracy.</p>
+            <div class="detection-features">
+              <span>🦵 Hip landmark tracking</span>
+              <span>📐 Vertical oscillation</span>
+              <span>🔥 MET calorie engine</span>
+              <span>⚡ Real-time cadence</span>
+            </div>
+            <button class="btn-primary" id="start-camera-btn" onclick="startCameraSession()">▶ Start Camera Session</button>
+          </div>
+        </div>
+        <div class="session-hud hidden" id="session-hud">
+          <div class="hud-top">
+            <div class="hud-metric"><span class="hud-val" id="hud-steps">0</span><span class="hud-lbl">steps</span></div>
+            <div class="hud-metric"><span class="hud-val" id="hud-time">0:00</span><span class="hud-lbl">time</span></div>
+            <div class="hud-metric"><span class="hud-val" id="hud-cadence">0</span><span class="hud-lbl">spm</span></div>
+            <div class="hud-metric"><span class="hud-val" id="hud-kcal">0</span><span class="hud-lbl">kcal</span></div>
+          </div>
+          <div class="detection-status"><span class="det-dot" id="det-dot"></span><span id="det-text">Initializing…</span></div>
+        </div>
+      </div>
+
+      <div id="session-controls-idle">
+        <div class="session-info-cards">
+          <div class="si-card"><span>🧬</span><div><strong>MediaPipe Pose</strong><p>33 body landmarks tracked at 10fps. Hip Y-coordinate oscillation detects each step with 350ms cooldown gate.</p></div></div>
+          <div class="si-card"><span>🔥</span><div><strong>MET Calorie Engine</strong><p>Calories calculated per activity MET value × weight × time — far more accurate than generic step counters.</p></div></div>
+          <div class="si-card"><span>🔋</span><div><strong>Hybrid Architecture</strong><p>Camera only on active sessions. Background uses accelerometer — preserves battery for all-day tracking.</p></div></div>
+        </div>
+      </div>
+
+      <div class="session-controls-active hidden" id="session-controls-active">
+        <div class="session-live-stats">
+          <div class="ls-item">
+            <label>Step Cadence</label>
+            <div class="ls-bar-wrap"><div class="ls-bar-fill" id="cadence-bar" style="width:0%"></div></div>
+            <span id="cadence-text">— steps/min</span>
+          </div>
+          <div class="ls-item">
+            <label>Movement Quality</label>
+            <div class="ls-bar-wrap good"><div class="ls-bar-fill" id="quality-bar" style="width:75%"></div></div>
+            <span id="quality-text">Detecting…</span>
+          </div>
+          <div class="ls-item">
+            <label>Session Calories (MET)</label>
+            <div class="ls-bar-wrap warm"><div class="ls-bar-fill" id="kcal-bar" style="width:0%"></div></div>
+            <span id="kcal-session-text">0 kcal</span>
+          </div>
+        </div>
+        <div class="rpe-inline-check">
+          <p>💬 Exertion check (RPE):</p>
+          <div class="rpe-quick-btns" role="group" aria-label="Quick RPE">
+            <button class="rpe-quick" onclick="quickRPE(8)" style="background:#10b981">Easy</button>
+            <button class="rpe-quick" onclick="quickRPE(13)" style="background:#f59e0b">Moderate</button>
+            <button class="rpe-quick" onclick="quickRPE(17)" style="background:#ef4444">Hard</button>
+          </div>
+        </div>
+        <div class="session-btn-row">
+          <button class="btn-warning" onclick="showRPEModal()">Full RPE Check</button>
+          <button class="btn-danger" onclick="stopCameraSession()">End Session</button>
+        </div>
+      </div>
+
+      <div class="session-summary hidden" id="session-summary">
+        <h3>Session Complete 🎉</h3>
+        <div class="summary-stats">
+          <div class="ss-stat"><span id="ss-steps">0</span><label>Steps</label></div>
+          <div class="ss-stat"><span id="ss-time">0:00</span><label>Duration</label></div>
+          <div class="ss-stat"><span id="ss-cadence">—</span><label>Steps/min</label></div>
+          <div class="ss-stat"><span id="ss-kcal">0</span><label>kcal</label></div>
+        </div>
+        <div class="achievement-banner" id="achievement-banner"></div>
+        <button class="btn-primary" onclick="resetSession()">New Session</button>
+      </div>
+    </section>
+
+    <!-- ========= MICRO-INTERVENTIONS ========= -->
+    <section id="tab-content-interventions" class="tab-content" aria-label="Micro-Interventions">
+      <div class="mi-header">
+        <h2>⚡ MoveNow</h2>
+        <p>2-minute clinical micro-interventions — restore endothelial function after prolonged sitting (Dunstan et al., 2012)</p>
+      </div>
+
+      <div class="mi-active-zone hidden" id="mi-active-zone">
+        <div class="mi-exercise-display">
+          <div class="mi-ex-icon" id="mi-ex-icon">🦵</div>
+          <h3 id="mi-ex-name">Calf Raises</h3>
+          <p id="mi-ex-desc">Stand on tiptoes, hold 2 seconds, lower slowly.</p>
+          <div class="mi-timer-ring">
+            <svg width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">
+              <circle cx="70" cy="70" r="60" stroke="#1e293b" stroke-width="8" fill="none"/>
+              <circle cx="70" cy="70" r="60" stroke="url(#miGrad)" stroke-width="8" fill="none"
+                stroke-dasharray="376.99" stroke-dashoffset="0" stroke-linecap="round"
+                transform="rotate(-90 70 70)" id="mi-timer-circle"/>
+              <defs>
+                <linearGradient id="miGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop stop-color="#10b981"/><stop offset="1" stop-color="#6366f1"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="mi-timer-text">
+              <span id="mi-timer-sec" class="mi-sec">120</span>
+              <span class="mi-sec-label">sec</span>
+            </div>
+          </div>
+          <div class="mi-live-stats">
+            <div class="mi-ls-item"><span class="mi-ls-val" id="mi-rep-num">0</span><span class="mi-ls-lbl">reps</span></div>
+            <div class="mi-ls-item"><span class="mi-ls-val" id="mi-kcal-live">0</span><span class="mi-ls-lbl">kcal</span></div>
+          </div>
+          <div class="mi-controls">
+            <button class="btn-secondary" onclick="skipMIExercise()">Skip</button>
+            <button class="btn-danger" onclick="endMISession()">End</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mi-idle" id="mi-idle">
+        <div class="mi-science-card">
+          <h4>🔬 Clinical Evidence</h4>
+          <p>The <strong>50/10 Rule</strong> (Dunstan et al., 2012): Breaking sitting with 2-minute movement bouts reduces post-meal glucose by <strong>24%</strong>, triglycerides by <strong>12%</strong>, and improves endothelial function in cardiovascular risk patients.</p>
+        </div>
+        <h3 class="mi-section-title">Choose Intervention</h3>
+        <div class="mi-cards-grid">
+          <div class="mi-card" onclick="selectMI('calfraise')"><div class="mi-card-icon">🦵</div><h4>Calf Raises</h4><div class="mi-tags"><span class="mi-tag">Circulation</span><span class="mi-tag">Seated OK</span></div><p>Contracts calf pump — pushes venous blood back to heart.</p><div class="mi-card-meta"><span>⏱ 2 min</span><span>💓 Light</span><span>MET 2.5</span></div></div>
+          <div class="mi-card" onclick="selectMI('march')"><div class="mi-card-icon">🚶</div><h4>March in Place</h4><div class="mi-tags"><span class="mi-tag">Cardio</span><span class="mi-tag">Core</span></div><p>High-knee marching elevates HR and activates core.</p><div class="mi-card-meta"><span>⏱ 2 min</span><span>💓 Moderate</span><span>MET 3.5</span></div></div>
+          <div class="mi-card" onclick="selectMI('brisk')"><div class="mi-card-icon">🏃</div><h4>Brisk Walking</h4><div class="mi-tags"><span class="mi-tag">AHA Rec.</span><span class="mi-tag">Best All-Round</span></div><p>Talk-without-singing pace — gold standard arterial health.</p><div class="mi-card-meta"><span>⏱ 2 min</span><span>💓 Moderate</span><span>MET 4.5</span></div></div>
+          <div class="mi-card" onclick="selectMI('squat')"><div class="mi-card-icon">🏋️</div><h4>Desk Squats</h4><div class="mi-tags"><span class="mi-tag">Glucose</span><span class="mi-tag">Strength</span></div><p>Large leg muscles burn glucose instantly — reduces post-meal spikes.</p><div class="mi-card-meta"><span>⏱ 2 min</span><span>💓 Mod-High</span><span>MET 5.0</span></div></div>
+          <div class="mi-card" onclick="selectMI('stretch')"><div class="mi-card-icon">🧘</div><h4>Seated Stretches</h4><div class="mi-tags"><span class="mi-tag">Safe</span><span class="mi-tag">Anyone</span></div><p>Neck, shoulder and hip circles — safe for all fitness levels.</p><div class="mi-card-meta"><span>⏱ 2 min</span><span>💓 Very Light</span><span>MET 2.0</span></div></div>
+          <div class="mi-card" onclick="selectMI('stairs')"><div class="mi-card-icon">🪜</div><h4>Stair Steps</h4><div class="mi-tags"><span class="mi-tag">High ROI</span><span class="mi-tag">Cardio</span></div><p>2 min stair stepping ≈ 10 min moderate exercise for CV benefit.</p><div class="mi-card-meta"><span>⏱ 2 min</span><span>💓 Mod-High</span><span>MET 6.0</span></div></div>
+        </div>
+        <button class="btn-primary mi-surprise-btn" onclick="selectMI('random')">⚡ Surprise Me!</button>
+      </div>
+
+      <div class="mi-log" role="region" aria-label="Today's movement log">
+        <h3>Today's Movement Log</h3>
+        <div id="mi-log-list" class="mi-log-list">
+          <p class="mi-log-empty">No micro-interventions yet today. Start your first one!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========= PROGRESS ========= -->
+    <section id="tab-content-history" class="tab-content" aria-label="Progress">
+      <div class="progress-header">
+        <h2>📈 Your Progress</h2>
+        <div class="date-range-btns" role="group" aria-label="Date range">
+          <button class="dr-btn active" onclick="setRange('7d',this)">7 Days</button>
+          <button class="dr-btn" onclick="setRange('30d',this)">30 Days</button>
+          <button class="dr-btn" onclick="setRange('90d',this)">3 Months</button>
+        </div>
+      </div>
+
+      <div class="streak-banner" role="region" aria-label="Achievement stats">
+        <div class="streak-item"><span class="streak-icon">🔥</span><span class="streak-val" id="streak-days">0</span><span class="streak-lbl">Day Streak</span></div>
+        <div class="streak-divider"></div>
+        <div class="streak-item"><span class="streak-icon">⭐</span><span class="streak-val" id="goal-days">0</span><span class="streak-lbl">Goal Days</span></div>
+        <div class="streak-divider"></div>
+        <div class="streak-item"><span class="streak-icon">⚡</span><span class="streak-val" id="mi-total">0</span><span class="streak-lbl">MicroMoves</span></div>
+        <div class="streak-divider"></div>
+        <div class="streak-item"><span class="streak-icon">🔥</span><span class="streak-val" id="total-kcal">0</span><span class="streak-lbl">kcal Total</span></div>
+      </div>
+
+      <div class="chart-card"><h3>Daily Steps &amp; Goal</h3><div class="chart-wrap"><canvas id="steps-chart" width="340" height="180" aria-label="Steps chart"></canvas></div><div class="chart-legend"><span class="cl-item cl-steps">Steps</span><span class="cl-item cl-goal">Goal Line</span></div></div>
+
+      <div class="chart-card"><h3>Sitting Pattern</h3><div class="chart-wrap"><canvas id="sitting-chart" width="340" height="150" aria-label="Sitting chart"></canvas></div></div>
+
+      <div class="chart-card"><h3>🔥 Calories Burned by Activity</h3><div class="chart-wrap"><canvas id="kcal-chart" width="340" height="150" aria-label="Calorie chart"></canvas></div></div>
+
+      <div class="risk-card" role="region" aria-label="CV risk">
+        <h3>Cardiovascular Risk Trend</h3>
+        <p class="risk-subtitle">Composite of steps, sedentary breaks, MIs, and activity pattern</p>
+        <div class="risk-gauge-wrap">
+          <svg width="200" height="110" viewBox="0 0 200 110" aria-hidden="true">
+            <path d="M20 100 A80 80 0 0 1 180 100" stroke="#1e293b" stroke-width="14" fill="none"/>
+            <path d="M20 100 A80 80 0 0 1 180 100" stroke="url(#riskGrad)" stroke-width="14" fill="none"
+              stroke-dasharray="251.33" stroke-dashoffset="126" stroke-linecap="round" id="risk-arc"/>
+            <defs>
+              <linearGradient id="riskGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#10b981"/>
+                <stop offset="50%" stop-color="#f59e0b"/>
+                <stop offset="100%" stop-color="#ef4444"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="risk-level" id="risk-level">Moderate</div>
+          <div class="risk-score" id="risk-score">45</div>
+        </div>
+        <div class="risk-factors">
+          <div class="rf-item" id="rf-steps"><span class="rf-dot green"></span>Steps: <strong id="rf-steps-val">—</strong></div>
+          <div class="rf-item" id="rf-sitting"><span class="rf-dot yellow"></span>Sedentary breaks: <strong id="rf-sitting-val">—</strong></div>
+          <div class="rf-item" id="rf-mi"><span class="rf-dot green"></span>Micro-interventions: <strong id="rf-mi-val">—</strong></div>
+          <div class="rf-item" id="rf-art"><span class="rf-dot green"></span>Arterial Age: <strong id="rf-art-val">—</strong></div>
+        </div>
+      </div>
+
+      <div class="history-table-card">
+        <h3>Weekly Summary</h3>
+        <div class="history-table-wrap" role="table">
+          <div class="ht-header" role="row"><span>Day</span><span>Steps</span><span>Goal</span><span>kcal</span><span>MoveNow</span></div>
+          <div id="history-table-body" role="rowgroup"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="app-footer" role="contentinfo">
+    <span>Inspired by <strong>Tony Onoja</strong>, Uni of Surrey &nbsp;·&nbsp;</span>
+    <a href="https://paypal.me/Onoja412" target="_blank" rel="noopener" class="footer-support-link">💙 Support</a>
+    &nbsp;·&nbsp;
+    <button class="footer-about-btn" onclick="openAbout()">About &amp; Compare</button>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
