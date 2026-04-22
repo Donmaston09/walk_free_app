@@ -316,6 +316,36 @@
   </div>
 </div>
 
+<!-- ===================== PROFILE MODAL ===================== -->
+<div id="profile-modal" class="about-modal" role="dialog" aria-modal="true" aria-label="User Profile">
+  <div class="about-card">
+    <button class="modal-close-btn" onclick="document.getElementById('profile-modal').classList.remove('active')" aria-label="Close">✕</button>
+    <div class="about-logo-wrap" style="flex-direction: column; text-align: center; gap: 12px; justify-content: center;">
+      <div class="creator-avatar" id="profile-modal-avatar" style="width: 64px; height: 64px; font-size: 24px; margin: 0 auto;">AO</div>
+      <div>
+        <h2 class="about-app-name" id="profile-modal-name" style="text-align: center;">User Name</h2>
+        <span class="about-version" id="profile-modal-age" style="text-align: center;">Age: 0 | Weight: 0kg</span>
+      </div>
+    </div>
+    <div class="about-edge-section">
+      <h4>👤 Profile Details</h4>
+      <div class="compare-table">
+        <div class="ct-row" style="grid-template-columns: 1fr 1fr;"><span style="text-align: left;">Condition</span><strong id="profile-modal-condition" style="text-align: right; color: var(--text-primary);">General Prevention</strong></div>
+        <div class="ct-row" style="grid-template-columns: 1fr 1fr;"><span style="text-align: left;">Daily Step Goal</span><strong id="profile-modal-goal" style="text-align: right; color: var(--text-primary);">8,500</strong></div>
+        <div class="ct-row" style="grid-template-columns: 1fr 1fr;"><span style="text-align: left;">Preferred Activity</span><strong id="profile-modal-activity" style="text-align: right; color: var(--text-primary);">Walking</strong></div>
+        <div class="ct-row" style="grid-template-columns: 1fr 1fr;"><span style="text-align: left;">Max Safe HR</span><strong id="profile-modal-maxhr" style="text-align: right; color: var(--text-primary);">0 BPM</strong></div>
+      </div>
+    </div>
+    <div style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top: 16px;">
+      🔒 All data stored locally — never uploaded.
+    </div>
+    <div class="btn-row" style="margin-top: 24px;">
+      <button class="btn-secondary" onclick="editProfile()">Edit Profile</button>
+      <button class="btn-danger" style="background: rgba(239, 68, 68, 0.1); color: var(--red);" onclick="resetAppData()">Wipe Data</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== MAIN APP ===================== -->
 <div id="app" class="app hidden">
 
@@ -561,7 +591,10 @@
             <canvas id="waveform-canvas" width="280" height="60" style="border-radius:8px;background:var(--bg-elevated)"></canvas>
             <div class="hr-zone-display" id="hr-zone-display">Zone —</div>
             <div class="hr-status" id="hr-status-text">Detecting pulse…</div>
-            <button class="btn-secondary" style="max-width:140px;margin-top:4px" onclick="stopHRCheck()">Stop</button>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:4px;width:100%;">
+              <button class="btn-secondary" style="flex:1;max-width:140px" onclick="stopHRCheck()">Stop</button>
+              <button class="btn-secondary" style="flex:1;max-width:140px;background:var(--bg-elevated);color:var(--text-primary);" onclick="flipCamera('hr')">🔄 Flip</button>
+            </div>
           </div>
         </div>
         <div class="hr-threshold-info">Safe Max HR: <strong id="hr-threshold-display">—</strong> BPM &nbsp;|&nbsp; <code>(220 − age) × 0.85</code></div>
@@ -588,6 +621,7 @@
 
       <div class="camera-container" id="camera-container">
         <video id="session-video" autoplay playsinline muted class="session-video" aria-label="Camera feed"></video>
+        <button class="btn-flip-camera hidden" id="session-flip-btn" onclick="flipCamera('session')" aria-label="Flip Camera">🔄</button>
         <canvas id="session-canvas" class="session-canvas" aria-hidden="true"></canvas>
         <div class="camera-overlay" id="camera-overlay">
           <div class="camera-idle-content">

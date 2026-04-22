@@ -72,6 +72,7 @@ const STATE = {
   selectedRPE: null,
   selectedMI: null,
   cameraStream: null,
+  cameraFacingMode: 'user',
   poseDetectionInterval: null,
   stepInterval: null,
   hrFrameId: null,
@@ -587,7 +588,7 @@ async function startCameraSession() {
   btn.textContent = 'Starting camera…'; btn.disabled = true;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false,
+      video: { facingMode: STATE.cameraFacingMode, width: { ideal: 640 }, height: { ideal: 480 } }, audio: false,
     });
     STATE.cameraStream = stream;
     const video = document.getElementById('session-video');
@@ -603,6 +604,7 @@ async function startCameraSession() {
 function initCameraSession(video) {
   document.getElementById('camera-overlay').style.display = 'none';
   document.getElementById('session-hud').classList.remove('hidden');
+  document.getElementById('session-flip-btn').classList.remove('hidden');
   document.getElementById('session-controls-idle').style.display = 'none';
   document.getElementById('session-controls-active').classList.remove('hidden');
 
@@ -738,9 +740,32 @@ function stopCameraSession() {
 
   STATE.session = null;
   document.getElementById('session-hud').classList.add('hidden');
+  document.getElementById('session-flip-btn').classList.add('hidden');
   document.getElementById('session-controls-active').classList.add('hidden');
   document.getElementById('session-summary').classList.remove('hidden');
   document.getElementById('session-video').srcObject = null;
+}
+
+function flipCamera(source) {
+  STATE.cameraFacingMode = STATE.cameraFacingMode === 'user' ? 'environment' : 'user';
+  if (source === 'session') {
+    if (STATE.cameraStream) { STATE.cameraStream.getTracks().forEach(t => t.stop()); STATE.cameraStream = null; }
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: STATE.cameraFacingMode, width: { ideal: 640 }, height: { ideal: 480 } }, audio: false,
+    }).then(stream => {
+      STATE.cameraStream = stream;
+      const video = document.getElementById('session-video');
+      video.srcObject = stream;
+    }).catch(showCameraError);
+  } else if (source === 'hr') {
+    if (STATE.hrSession?.stream) STATE.hrSession.stream.getTracks().forEach(t=>t.stop());
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: STATE.cameraFacingMode }, audio: false })
+      .then(stream => {
+        STATE.hrSession.stream = stream;
+        const v = document.getElementById('hr-video');
+        v.srcObject = stream;
+      }).catch(() => simulateHR());
+  }
 }
 
 function resetSession() {
@@ -773,7 +798,7 @@ function startHRCheck() {
   document.getElementById('hr-idle-state').classList.add('hidden');
   document.getElementById('hr-measuring-state').classList.remove('hidden');
 
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: STATE.cameraFacingMode === 'user' ? 'user' : 'environment' }, audio: false })
     .then(stream => {
       STATE.hrSession = { stream };
       const v = document.getElementById('hr-video');
@@ -1254,7 +1279,34 @@ function openProfile() {
   const u = STATE.user;
   const g = (CONDITION_GOALS[u.condition]?.label || u.condition);
   const maxHR = calcMaxHR(u.age);
-  alert(`👤 ${u.name}'s Profile\n\nAge: ${u.age} | Weight: ${u.weight}kg\nCondition: ${g}\nStep Goal: ${(u.stepGoal||8500).toLocaleString()} steps/day\nPreferred Activity: ${ACTIVITY_META[STATE.currentActivity]?.name || 'Walking'}\nMax Safe HR: ${maxHR} BPM\n\n🔒 All data stored locally — never uploaded.\n\nTo reset: Clear browser storage.`);
+  
+  document.getElementById('profile-modal-avatar').textContent = u.name.slice(0,2).toUpperCase();
+  document.getElementById('profile-modal-name').textContent = u.name;
+  document.getElementById('profile-modal-age').textContent = `Age: ${u.age} | Weight: ${u.weight}kg`;
+  document.getElementById('profile-modal-condition').textContent = g;
+  document.getElementById('profile-modal-goal').textContent = (u.stepGoal||8500).toLocaleString();
+  document.getElementById('profile-modal-activity').textContent = ACTIVITY_META[STATE.currentActivity]?.name || 'Walking';
+  document.getElementById('profile-modal-maxhr').textContent = `${maxHR} BPM`;
+  
+  document.getElementById('profile-modal').classList.add('active');
+}
+
+function editProfile() {
+  document.getElementById('profile-modal').classList.remove('active');
+  document.getElementById('onboarding-overlay').style.display = 'flex';
+  // Use a small timeout to let the modal close before showing onboarding
+  setTimeout(() => {
+    document.getElementById('onboarding-overlay').style.opacity = '1';
+    document.getElementById('onboarding-overlay').classList.add('active');
+    showOBStep(1);
+  }, 50);
+}
+
+function resetAppData() {
+  if (confirm('Are you sure you want to permanently delete all your data? This cannot be undone.')) {
+    localStorage.removeItem(DB_KEY);
+    window.location.reload();
+  }
 }
 
 // ─── INIT ─────────────────────────────────────────────────────
