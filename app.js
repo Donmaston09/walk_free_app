@@ -83,8 +83,11 @@ const DB_KEY = 'walkfree_v2';
 const CIRC_STEP = 2 * Math.PI * 90;   // r=90 outer ring
 const CIRC_CAL  = 2 * Math.PI * 72;   // r=72 inner ring
 const CIRC_MI   = 2 * Math.PI * 60;   // MI timer r=60
-const SEDENTARY_ALERT_SEC = 50 * 60;
 const SNOOZE_SEC = 10 * 60;
+
+function getSedentaryLimitSec() {
+  return (STATE.user?.reminderInterval || 50) * 60;
+}
 
 // ─── PERSISTENCE ──────────────────────────────────────────────
 function persist() {
@@ -306,12 +309,13 @@ function startSedentaryTimer() {
 
 function tickSedentary() {
   STATE.sedentarySeconds++;
+  const limitSec = getSedentaryLimitSec();
   const mins = Math.floor(STATE.sedentarySeconds / 60);
   const secs = STATE.sedentarySeconds % 60;
   document.getElementById('sedentary-display').textContent =
     `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
 
-  const pct = Math.min((STATE.sedentarySeconds / SEDENTARY_ALERT_SEC) * 100, 100);
+  const pct = Math.min((STATE.sedentarySeconds / limitSec) * 100, 100);
   const fill = document.getElementById('sc-progress-fill');
   fill.style.width = pct + '%';
   document.getElementById('sc-sitting-time').textContent = `${mins} min`;
@@ -329,7 +333,7 @@ function tickSedentary() {
     fill.className = 'sc-progress-fill warning';
     badge.className = 'sedentary-timer-badge warning';
     status.className = 'sc-status-warn';
-    status.textContent = '⚠ Move soon — ' + (50 - mins) + ' min left';
+    status.textContent = `⚠ Move soon — ${Math.ceil((limitSec - STATE.sedentarySeconds)/60)} min left`;
   } else {
     fill.className = 'sc-progress-fill danger';
     badge.className = 'sedentary-timer-badge danger';
@@ -337,7 +341,7 @@ function tickSedentary() {
     status.textContent = '🔴 Endothelial risk — MOVE NOW!';
   }
 
-  if (STATE.sedentarySeconds >= SEDENTARY_ALERT_SEC && !STATE.alertShown && Date.now() > STATE.snoozedUntil) {
+  if (STATE.sedentarySeconds >= limitSec && !STATE.alertShown && Date.now() > STATE.snoozedUntil) {
     triggerVascularAlert();
   }
 }
@@ -352,13 +356,19 @@ function triggerVascularAlert() {
     });
   }
   if ('vibrate' in navigator) navigator.vibrate([200, 100, 200, 100, 400]);
+  
+  if (STATE.user?.voiceEnabled && 'speechSynthesis' in window) {
+    const mins = Math.floor(STATE.sedentarySeconds / 60);
+    const msg = new SpeechSynthesisUtterance(`WalkFree Reminder. You have been sitting for ${mins} minutes. It's time to stand up and observe a quick walk or stretch.`);
+    window.speechSynthesis.speak(msg);
+  }
 }
 
 function snoozeAlert() {
   document.getElementById('alert-modal').classList.remove('active');
   STATE.snoozedUntil = Date.now() + SNOOZE_SEC * 1000;
   STATE.alertShown = false;
-  STATE.sedentarySeconds = SEDENTARY_ALERT_SEC - SNOOZE_SEC;
+  STATE.sedentarySeconds = getSedentaryLimitSec() - SNOOZE_SEC;
 }
 
 function resetSedentaryTimer() {
@@ -1354,7 +1364,28 @@ function openProfile() {
   document.getElementById('profile-modal-activity').textContent = ACTIVITY_META[STATE.currentActivity]?.name || 'Walking';
   document.getElementById('profile-modal-maxhr').textContent = `${maxHR} BPM`;
   
+  document.getElementById('profile-voice-toggle').checked = !!u.voiceEnabled;
+  document.getElementById('profile-interval-select').value = u.reminderInterval || 50;
+  
   document.getElementById('profile-modal').classList.add('active');
+}
+
+function updateVoiceSetting(enabled) {
+  if (STATE.user) {
+    STATE.user.voiceEnabled = enabled;
+    persist();
+    if (enabled && 'speechSynthesis' in window) {
+       window.speechSynthesis.speak(new SpeechSynthesisUtterance("Voice reminders enabled."));
+    }
+  }
+}
+
+function updateIntervalSetting(val) {
+  if (STATE.user) {
+    STATE.user.reminderInterval = parseInt(val);
+    persist();
+    if (STATE.alertShown) resetSedentaryTimer(); 
+  }
 }
 
 function editProfile() {

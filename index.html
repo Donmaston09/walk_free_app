@@ -336,6 +336,27 @@
         <div class="ct-row" style="grid-template-columns: 1fr 1fr;"><span style="text-align: left;">Max Safe HR</span><strong id="profile-modal-maxhr" style="text-align: right; color: var(--text-primary);">0 BPM</strong></div>
       </div>
     </div>
+    <div class="about-edge-section" style="margin-top: 16px;">
+      <h4>🔔 Reminder Settings</h4>
+      <div class="compare-table">
+        <div class="ct-row" style="grid-template-columns: 1fr auto; padding: 12px;">
+          <span style="text-align: left; margin-top: 2px;">Voice Reminder</span>
+          <div class="toggle-switch">
+            <input type="checkbox" id="profile-voice-toggle" onchange="updateVoiceSetting(this.checked)" />
+            <label for="profile-voice-toggle" aria-label="Enable voice reminder"></label>
+          </div>
+        </div>
+        <div class="ct-row" style="grid-template-columns: 1fr auto; padding: 12px;">
+          <span style="text-align: left; margin-top: 4px;">Remind me every</span>
+          <select id="profile-interval-select" onchange="updateIntervalSetting(this.value)" style="background:var(--bg-elevated); border:1.5px solid var(--border); color:var(--text-primary); border-radius:6px; padding:4px 8px; font-size:12px; outline:none; cursor:pointer;">
+            <option value="30">30 minutes</option>
+            <option value="50">50 mins (Clinical)</option>
+            <option value="60">1 hour</option>
+            <option value="120">2 hours</option>
+          </select>
+        </div>
+      </div>
+    </div>
     <div style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top: 16px;">
       🔒 All data stored locally — never uploaded.
     </div>
