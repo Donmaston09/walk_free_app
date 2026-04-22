@@ -775,6 +775,11 @@ function flipCamera(source) {
         STATE.hrSession.stream = stream;
         const v = document.getElementById('hr-video');
         v.srcObject = stream;
+        
+        const track = stream.getVideoTracks()[0];
+        if (track.getCapabilities && track.getCapabilities().torch) {
+          track.applyConstraints({ advanced: [{ torch: true }] }).catch(e => console.warn('Torch issue:', e));
+        }
       }).catch(() => simulateHR());
   }
 }
@@ -815,6 +820,12 @@ function startHRCheck() {
       STATE.hrSession = { stream };
       const v = document.getElementById('hr-video');
       v.srcObject = stream;
+      
+      const track = stream.getVideoTracks()[0];
+      if (track.getCapabilities && track.getCapabilities().torch) {
+        track.applyConstraints({ advanced: [{ torch: true }] }).catch(e => console.warn('Torch issue:', e));
+      }
+
       v.onloadedmetadata = () => { v.play(); hrLoop(v); };
     })
     .catch(() => simulateHR());
