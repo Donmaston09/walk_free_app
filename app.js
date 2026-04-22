@@ -76,6 +76,7 @@ const STATE = {
   poseDetectionInterval: null,
   stepInterval: null,
   hrFrameId: null,
+  bluetoothDevice: null,
 };
 
 const DB_KEY = 'walkfree_v2';
@@ -797,6 +798,7 @@ const HR_BUF_MAX = 90, HR_FPS = 30;
 function startHRCheck() {
   document.getElementById('hr-idle-state').classList.add('hidden');
   document.getElementById('hr-measuring-state').classList.remove('hidden');
+  document.getElementById('hr-video').classList.remove('hidden');
 
   navigator.mediaDevices.getUserMedia({ video: { facingMode: STATE.cameraFacingMode === 'user' ? 'user' : 'environment' }, audio: false })
     .then(stream => {
@@ -806,6 +808,63 @@ function startHRCheck() {
       v.onloadedmetadata = () => { v.play(); hrLoop(v); };
     })
     .catch(() => simulateHR());
+}
+
+async function connectBluetoothHR() {
+  try {
+    const device = await navigator.bluetooth.requestDevice({
+      filters: [{ services: ['heart_rate'] }]
+    });
+    
+    document.getElementById('hr-idle-state').classList.add('hidden');
+    document.getElementById('hr-measuring-state').classList.remove('hidden');
+    document.getElementById('hr-video').classList.add('hidden'); // Hide video for BLE
+    document.getElementById('hr-status-text').textContent = `Connecting to ${device.name || 'Device'}...`;
+    
+    STATE.bluetoothDevice = device;
+    device.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
+
+    const server = await device.gatt.connect();
+    const service = await server.getPrimaryService('heart_rate');
+    const characteristic = await service.getCharacteristic('heart_rate_measurement');
+    
+    await characteristic.startNotifications();
+    characteristic.addEventListener('characteristicvaluechanged', handleHRMeasurement);
+    
+    document.getElementById('hr-status-text').textContent = `Connected to ${device.name || 'BLE Device'} (Live)`;
+  } catch (error) {
+    console.error('Bluetooth connection failed', error);
+    if(error.name !== 'NotFoundError') {
+       alert('Could not connect to Bluetooth device. Ensure it is turned on and broadcasting.');
+    }
+    stopHRCheck();
+  }
+}
+
+function handleHRMeasurement(event) {
+  const value = event.target.value;
+  const flags = value.getUint8(0);
+  const rate16Bits = flags & 0x1;
+  const heartRate = rate16Bits ? value.getUint16(1, true) : value.getUint8(1);
+
+  document.getElementById('hr-bpm-value').textContent = heartRate;
+  document.getElementById('hrz-resting').textContent = heartRate;
+  updateHRZoneBadge(heartRate);
+  checkHRThreshold(heartRate);
+  
+  if (STATE.today) {
+    const lastReading = STATE.today.hrReadings.at(-1);
+    if (!lastReading || (Date.now() - lastReading.time) > 2000) {
+        STATE.today.hrReadings.push({ bpm: heartRate, time: Date.now() });
+    }
+  }
+}
+
+function onBluetoothDisconnected() {
+  if (STATE.bluetoothDevice) {
+    alert('Bluetooth device disconnected.');
+    stopHRCheck();
+  }
 }
 
 function hrLoop(video) {
@@ -914,7 +973,14 @@ function stopHRCheck() {
   if (STATE.hrSession?.stream) STATE.hrSession.stream.getTracks().forEach(t=>t.stop());
   if (STATE.hrSession?.simIv) clearInterval(STATE.hrSession.simIv);
   STATE.hrSession = null;
+  
+  if (STATE.bluetoothDevice?.gatt?.connected) {
+    STATE.bluetoothDevice.gatt.disconnect();
+  }
+  STATE.bluetoothDevice = null;
+  
   hrBuffer.length = 0; hrWaveData.length = 0;
+  document.getElementById('hr-video').classList.remove('hidden'); // Reset for next camera usage
   document.getElementById('hr-idle-state').classList.remove('hidden');
   document.getElementById('hr-measuring-state').classList.add('hidden');
 }

@@ -579,8 +579,10 @@
           <span class="hr-method-badge">rPPG — No wearable needed</span>
         </div>
         <div id="hr-idle-state" class="hr-idle">
-          <p>Cover the rear camera lens with your fingertip. The app reads pulse from subtle colour changes in your skin.</p>
-          <button class="btn-primary" style="max-width:200px" onclick="startHRCheck()">Start Measurement</button>
+          <p style="margin-bottom:8px;">Choose how to measure your heart rate:</p>
+          <button class="btn-primary" style="max-width:240px; margin-bottom:8px;" onclick="startHRCheck()">📷 Use Camera (rPPG)</button>
+          <button class="btn-secondary" style="max-width:240px; background:rgba(99,102,241,.15); color:var(--indigo-light); border-color:var(--indigo);" onclick="connectBluetoothHR()">⌚ Connect BLE Wearable</button>
+          <p style="font-size:11px; margin-top:12px; max-width: 240px;">Camera uses subtle skin colour changes. BLE supports chest straps and smartwatches.</p>
         </div>
         <div id="hr-measuring-state" class="hr-measuring hidden">
           <video id="hr-video" autoplay playsinline muted class="hr-video" aria-label="Camera for HR"></video>
